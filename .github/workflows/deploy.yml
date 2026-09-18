@@ -1,0 +1,84 @@
+name: Deploy AutoFlow
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  id-token: write   # required for OIDC -> AWS role assumption (no long-lived keys)
+  contents: read
+
+env:
+  AWS_REGION: ap-southeast-2
+  TF_VAR_aws_region: ap-southeast-2
+
+jobs:
+  terraform:
+    name: Terraform plan & apply
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: terraform
+    outputs:
+      frontend_bucket: ${{ steps.tf_outputs.outputs.frontend_bucket }}
+      cloudfront_domain: ${{ steps.tf_outputs.outputs.cloudfront_domain }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.16.3"
+
+      - name: terraform init
+        run: terraform init
+
+      - name: terraform plan
+        run: terraform plan -no-color -out=tfplan
+
+      - name: terraform apply
+        run: terraform apply -no-color -auto-approve tfplan
+
+      - name: Capture outputs
+        id: tf_outputs
+        run: |
+          echo "frontend_bucket=$(terraform output -raw frontend_bucket)" >> "$GITHUB_OUTPUT"
+          echo "cloudfront_domain=$(terraform output -raw cloudfront_domain)" >> "$GITHUB_OUTPUT"
+          echo "api_endpoint=$(terraform output -raw api_endpoint)" >> "$GITHUB_OUTPUT"
+          echo "cognito_user_pool_id=$(terraform output -raw cognito_user_pool_id)" >> "$GITHUB_OUTPUT"
+          echo "cognito_client_id=$(terraform output -raw cognito_client_id)" >> "$GITHUB_OUTPUT"
+
+  deploy-frontend:
+    name: Deploy frontend
+    needs: terraform
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Sync frontend to S3
+        run: |
+          aws s3 sync frontend/ "s3://${{ needs.terraform.outputs.frontend_bucket }}/" --delete
+
+      - name: Invalidate CloudFront cache
+        run: |
+          DIST_ID=$(aws cloudfront list-distributions \
+            --query "DistributionList.Items[?DomainName=='${{ needs.terraform.outputs.cloudfront_domain }}'].Id" \
+            --output text)
+          aws cloudfront create-invalidation --distribution-id "$DIST_ID" --paths "/*"
+
+      - name: Summary
+        run: |
+          echo "### Deployed :rocket:" >> "$GITHUB_STEP_SUMMARY"
+          echo "Live at: https://${{ needs.terraform.outputs.cloudfront_domain }}" >> "$GITHUB_STEP_SUMMARY"

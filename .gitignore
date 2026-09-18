@@ -1,0 +1,7 @@
+terraform/.terraform/
+terraform/build/
+terraform/*.tfstate
+terraform/*.tfstate.backup
+terraform/tfplan*
+*.zip
+.DS_Store

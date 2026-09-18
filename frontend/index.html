@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AutoFlow — Serverless File Automation</title>
+<style>
+  :root {
+    --bg: #0b0e14;
+    --panel: #12161f;
+    --panel-2: #171c28;
+    --border: #232939;
+    --text: #e6e9f0;
+    --muted: #8891a7;
+    --accent: #5b8cff;
+    --accent-2: #7c5cff;
+    --green: #35d399;
+    --amber: #ffb454;
+    --red: #ff5c7a;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: radial-gradient(1200px 600px at 20% -10%, #151b2c 0%, var(--bg) 55%);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+    min-height: 100vh;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 32px 20px 80px; }
+  header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand .logo {
+    width: 34px; height: 34px; border-radius: 9px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px;
+  }
+  .brand h1 { font-size: 19px; margin: 0; letter-spacing: -0.02em; }
+  .brand .tag { color: var(--muted); font-size: 12px; margin-top: -2px; }
+  #userBar { display: none; align-items: center; gap: 12px; font-size: 13px; color: var(--muted); }
+  #userBar button {
+    background: var(--panel-2); border: 1px solid var(--border); color: var(--text);
+    padding: 6px 12px; border-radius: 7px; cursor: pointer; font-size: 12px;
+  }
+  #userBar button:hover { border-color: var(--accent); }
+
+  .card {
+    background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 22px; margin-bottom: 18px;
+  }
+  h2 { font-size: 14px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin: 0 0 16px; }
+
+  /* ---- Auth ---- */
+  #authCard { max-width: 400px; margin: 60px auto; }
+  #authCard .tabs { display: flex; gap: 4px; margin-bottom: 18px; background: var(--panel-2); padding: 4px; border-radius: 8px; }
+  #authCard .tabs button {
+    flex: 1; padding: 8px; border: none; border-radius: 6px; background: transparent; color: var(--muted);
+    cursor: pointer; font-size: 13px; font-weight: 500;
+  }
+  #authCard .tabs button.active { background: var(--accent); color: #fff; }
+  input {
+    width: 100%; padding: 10px 12px; margin-bottom: 10px; border-radius: 7px;
+    border: 1px solid var(--border); background: var(--panel-2); color: var(--text); font-size: 14px;
+  }
+  input:focus { outline: none; border-color: var(--accent); }
+  .btn {
+    width: 100%; padding: 11px; border-radius: 7px; border: none; cursor: pointer;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; font-weight: 600; font-size: 14px;
+  }
+  .btn:hover { filter: brightness(1.08); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .authMsg { font-size: 12px; margin-top: 10px; min-height: 16px; }
+  .authMsg.err { color: var(--red); }
+  .authMsg.ok { color: var(--green); }
+
+  /* ---- App ---- */
+  #app { display: none; }
+
+  .dropzone {
+    border: 1.5px dashed var(--border); border-radius: var(--radius); padding: 30px;
+    text-align: center; color: var(--muted); cursor: pointer; transition: border-color .15s;
+  }
+  .dropzone:hover, .dropzone.drag { border-color: var(--accent); color: var(--text); }
+  .dropzone input { display: none; }
+  .dropzone .hint { font-size: 12px; margin-top: 6px; }
+
+  /* ---- Pipeline visual ---- */
+  .pipeline { display: flex; align-items: center; margin: 18px 0 4px; }
+  .stage {
+    flex: 1; text-align: center; padding: 10px 4px; font-size: 11px; color: var(--muted);
+    border-top: 3px solid var(--border); position: relative;
+  }
+  .stage .dot {
+    width: 10px; height: 10px; border-radius: 50%; background: var(--border);
+    margin: -16px auto 6px; border: 3px solid var(--bg);
+  }
+  .stage.done { border-color: var(--green); color: var(--text); }
+  .stage.done .dot { background: var(--green); }
+  .stage.active { border-color: var(--accent); color: var(--text); }
+  .stage.active .dot { background: var(--accent); box-shadow: 0 0 0 4px rgba(91,140,255,.25); animation: pulse 1.4s infinite; }
+  .stage.failed { border-color: var(--red); color: var(--red); }
+  .stage.failed .dot { background: var(--red); }
+  @keyframes pulse { 0%,100% { box-shadow: 0 0 0 4px rgba(91,140,255,.25);} 50% { box-shadow: 0 0 0 8px rgba(91,140,255,.08);} }
+
+  /* ---- Jobs table ---- */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; color: var(--muted); font-weight: 500; font-size: 11px; text-transform: uppercase;
+       letter-spacing: .04em; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  td { padding: 10px; border-bottom: 1px solid var(--border); }
+  tr:last-child td { border-bottom: none; }
+  .badge { display: inline-block; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .badge.COMPLETE { background: rgba(53,211,153,.15); color: var(--green); }
+  .badge.RUNNING { background: rgba(91,140,255,.15); color: var(--accent); }
+  .badge.FAILED { background: rgba(255,92,122,.15); color: var(--red); }
+  .badge.VALID { background: rgba(91,140,255,.15); color: var(--accent); }
+  .muted { color: var(--muted); }
+  .empty { text-align: center; color: var(--muted); padding: 30px 0; font-size: 13px; }
+
+  footer { text-align: center; color: var(--muted); font-size: 11px; margin-top: 40px; }
+  footer a { color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brand">
+      <div class="logo">AF</div>
+      <div>
+        <h1>AutoFlow</h1>
+        <div class="tag">Serverless file processing &amp; orchestration</div>
+      </div>
+    </div>
+    <div id="userBar">
+      <span id="userEmail"></span>
+      <button id="logoutBtn">Sign out</button>
+    </div>
+  </header>
+
+  <!-- AUTH -->
+  <div class="card" id="authCard">
+    <div class="tabs">
+      <button id="tabSignin" class="active">Sign in</button>
+      <button id="tabSignup">Create account</button>
+    </div>
+
+    <div id="signinForm">
+      <input type="email" id="siEmail" placeholder="Email" autocomplete="username" />
+      <input type="password" id="siPassword" placeholder="Password" autocomplete="current-password" />
+      <button class="btn" id="siSubmit">Sign in</button>
+      <div class="authMsg" id="siMsg"></div>
+    </div>
+
+    <div id="signupForm" style="display:none">
+      <input type="email" id="suEmail" placeholder="Email" autocomplete="username" />
+      <input type="password" id="suPassword" placeholder="Password (min 8 chars, upper+lower+number)" autocomplete="new-password" />
+      <button class="btn" id="suSubmit">Create account</button>
+      <div class="authMsg" id="suMsg"></div>
+    </div>
+
+    <div id="confirmForm" style="display:none">
+      <input type="text" id="cfCode" placeholder="Confirmation code (check your email)" />
+      <button class="btn" id="cfSubmit">Confirm account</button>
+      <div class="authMsg" id="cfMsg"></div>
+    </div>
+  </div>
+
+  <!-- APP -->
+  <div id="app">
+    <div class="card">
+      <h2>Upload a file</h2>
+      <div class="dropzone" id="dropzone">
+        <div>Drop an <strong>.xml</strong>, <strong>.csv</strong>, or <strong>.json</strong> file here, or click to browse</div>
+        <div class="hint">It's automatically validated, transformed, and rule-checked by the pipeline</div>
+        <input type="file" id="fileInput" accept=".xml,.csv,.json" />
+      </div>
+
+      <div class="pipeline" id="pipelinePreview">
+        <div class="stage" data-stage="validate"><div class="dot"></div>Validate</div>
+        <div class="stage" data-stage="transform"><div class="dot"></div>Transform</div>
+        <div class="stage" data-stage="apply_rules"><div class="dot"></div>Apply Rules</div>
+        <div class="stage" data-stage="complete"><div class="dot"></div>Notify</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Job history</h2>
+      <table id="jobsTable">
+        <thead>
+          <tr><th>File</th><th>Status</th><th>Stage</th><th>Message</th><th>Updated</th></tr>
+        </thead>
+        <tbody id="jobsBody"></tbody>
+      </table>
+      <div class="empty" id="jobsEmpty" style="display:none">No jobs yet — upload a file above to see the pipeline run.</div>
+    </div>
+  </div>
+
+  <footer>AutoFlow — built on AWS Step Functions, Lambda, DynamoDB, Cognito, API Gateway, S3 &amp; CloudFront</footer>
+</div>
+
+<script>
+// ---- Config (this account's live AWS resources) ----
+const REGION = "ap-southeast-2";
+const USER_POOL_ID = "ap-southeast-2_x3le0D7YI";
+const CLIENT_ID = "2smndf3ulofm68lciroqtut4rh";
+const API_BASE = "https://byifq95z31.execute-api.ap-southeast-2.amazonaws.com";
+const COGNITO_ENDPOINT = `https://cognito-idp.${REGION}.amazonaws.com/`;
+
+let session = null; // { idToken, email }
+let pollTimer = null;
+let pendingSignupEmail = null;
+
+// ---- Cognito raw HTTP API helpers (no SDK needed) ----
+async function cognito(action, body) {
+  const res = await fetch(COGNITO_ENDPOINT, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-amz-json-1.1",
+      "X-Amz-Target": `AWSCognitoIdentityProviderService.${action}`,
+    },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || data.__type || "Request failed");
+  return data;
+}
+
+function setMsg(id, text, ok) {
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.className = "authMsg " + (ok ? "ok" : "err");
+}
+
+// ---- Tabs ----
+document.getElementById("tabSignin").onclick = () => switchTab("signin");
+document.getElementById("tabSignup").onclick = () => switchTab("signup");
+function switchTab(which) {
+  document.getElementById("tabSignin").classList.toggle("active", which === "signin");
+  document.getElementById("tabSignup").classList.toggle("active", which === "signup");
+  document.getElementById("signinForm").style.display = which === "signin" ? "block" : "none";
+  document.getElementById("signupForm").style.display = which === "signup" ? "block" : "none";
+  document.getElementById("confirmForm").style.display = "none";
+}
+
+// ---- Sign up ----
+document.getElementById("suSubmit").onclick = async () => {
+  const email = document.getElementById("suEmail").value.trim();
+  const password = document.getElementById("suPassword").value;
+  if (!email || !password) return setMsg("suMsg", "Email and password required");
+  try {
+    await cognito("SignUp", {
+      ClientId: CLIENT_ID,
+      Username: email,
+      Password: password,
+      UserAttributes: [{ Name: "email", Value: email }],
+    });
+    pendingSignupEmail = email;
+    setMsg("suMsg", "Account created. Check your email for a confirmation code.", true);
+    document.getElementById("confirmForm").style.display = "block";
+  } catch (e) {
+    setMsg("suMsg", e.message);
+  }
+};
+
+document.getElementById("cfSubmit").onclick = async () => {
+  const code = document.getElementById("cfCode").value.trim();
+  if (!code || !pendingSignupEmail) return setMsg("cfMsg", "Enter the code from your email");
+  try {
+    await cognito("ConfirmSignUp", { ClientId: CLIENT_ID, Username: pendingSignupEmail, ConfirmationCode: code });
+    setMsg("cfMsg", "Confirmed! You can sign in now.", true);
+    setTimeout(() => switchTab("signin"), 1200);
+  } catch (e) {
+    setMsg("cfMsg", e.message);
+  }
+};
+
+// ---- Sign in ----
+document.getElementById("siSubmit").onclick = async () => {
+  const email = document.getElementById("siEmail").value.trim();
+  const password = document.getElementById("siPassword").value;
+  if (!email || !password) return setMsg("siMsg", "Email and password required");
+  try {
+    const data = await cognito("InitiateAuth", {
+      AuthFlow: "USER_PASSWORD_AUTH",
+      ClientId: CLIENT_ID,
+      AuthParameters: { USERNAME: email, PASSWORD: password },
+    });
+    const idToken = data.AuthenticationResult.IdToken;
+    const refreshToken = data.AuthenticationResult.RefreshToken;
+    session = { idToken, refreshToken, email };
+    localStorage.setItem("autoflow_session", JSON.stringify(session));
+    enterApp();
+  } catch (e) {
+    setMsg("siMsg", e.message);
+  }
+};
+
+document.getElementById("logoutBtn").onclick = () => {
+  session = null;
+  localStorage.removeItem("autoflow_session");
+  clearInterval(pollTimer);
+  document.getElementById("app").style.display = "none";
+  document.getElementById("authCard").style.display = "block";
+  document.getElementById("userBar").style.display = "none";
+};
+
+function enterApp() {
+  document.getElementById("authCard").style.display = "none";
+  document.getElementById("app").style.display = "block";
+  document.getElementById("userBar").style.display = "flex";
+  document.getElementById("userEmail").textContent = session.email;
+  refreshJobs();
+  pollTimer = setInterval(refreshJobs, 4000);
+}
+
+// Restore session on load
+(function restore() {
+  const saved = localStorage.getItem("autoflow_session");
+  if (saved) {
+    try {
+      session = JSON.parse(saved);
+      enterApp();
+    } catch (e) { /* ignore */ }
+  }
+})();
+
+// ---- Upload ----
+const dropzone = document.getElementById("dropzone");
+const fileInput = document.getElementById("fileInput");
+dropzone.onclick = () => fileInput.click();
+dropzone.ondragover = (e) => { e.preventDefault(); dropzone.classList.add("drag"); };
+dropzone.ondragleave = () => dropzone.classList.remove("drag");
+dropzone.ondrop = (e) => {
+  e.preventDefault();
+  dropzone.classList.remove("drag");
+  if (e.dataTransfer.files.length) uploadFile(e.dataTransfer.files[0]);
+};
+fileInput.onchange = () => { if (fileInput.files.length) uploadFile(fileInput.files[0]); };
+
+async function uploadFile(file) {
+  try {
+    const res = await fetch(`${API_BASE}/upload-url`, {
+      method: "POST",
+      headers: { Authorization: session.idToken, "Content-Type": "application/json" },
+      body: JSON.stringify({ filename: file.name }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "could not get upload URL");
+
+    await fetch(data.upload_url, { method: "PUT", body: file });
+    fileInput.value = "";
+    setTimeout(refreshJobs, 1200);
+  } catch (e) {
+    alert("Upload failed: " + e.message);
+  }
+}
+
+// ---- Job polling ----
+async function refreshJobs() {
+  try {
+    const res = await fetch(`${API_BASE}/jobs`, { headers: { Authorization: session.idToken } });
+    if (res.status === 401) return document.getElementById("logoutBtn").click();
+    const jobs = await res.json();
+    renderJobs(jobs);
+  } catch (e) { /* transient network errors: ignore, next poll will retry */ }
+}
+
+const STAGES = ["validate", "transform", "apply_rules", "complete"];
+function renderJobs(jobs) {
+  const body = document.getElementById("jobsBody");
+  const empty = document.getElementById("jobsEmpty");
+  body.innerHTML = "";
+  empty.style.display = jobs.length ? "none" : "block";
+
+  if (jobs[0]) updatePipelinePreview(jobs[0]);
+
+  for (const job of jobs) {
+    const tr = document.createElement("tr");
+    const updated = job.updated_at ? new Date(job.updated_at).toLocaleString() : "-";
+    tr.innerHTML = `
+      <td>${escapeHtml(job.filename || "-")}</td>
+      <td><span class="badge ${job.status}">${job.status}</span></td>
+      <td class="muted">${escapeHtml(job.stage || "-")}</td>
+      <td class="muted">${escapeHtml((job.message || "").toString()).slice(0,80)}</td>
+      <td class="muted">${updated}</td>`;
+    body.appendChild(tr);
+  }
+}
+
+function updatePipelinePreview(latestJob) {
+  const idx = STAGES.indexOf(latestJob.stage);
+  document.querySelectorAll("#pipelinePreview .stage").forEach((el, i) => {
+    el.classList.remove("done", "active", "failed");
+    if (latestJob.status === "FAILED" && i === idx) el.classList.add("failed");
+    else if (i < idx || (latestJob.status === "COMPLETE")) el.classList.add("done");
+    else if (i === idx) el.classList.add("active");
+  });
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+</script>
+</body>
+</html>
