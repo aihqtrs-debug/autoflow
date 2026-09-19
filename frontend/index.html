@@ -14,7 +14,7 @@
     --panel-solid: #10131e;
     --panel-2: rgba(255,255,255,0.04);
     --border: rgba(255,255,255,0.08);
-    --border-strong: rgba(255,255,255,0.16);
+    --border-strong: rgba(255,255,255,0.18);
     --text: #eef1fb;
     --muted: #8a92ac;
     --cyan: #4ff0ff;
@@ -24,7 +24,7 @@
     --green: #35eab0;
     --amber: #ffc15e;
     --red: #ff5c8a;
-    --radius: 14px;
+    --radius: 16px;
     --grad: linear-gradient(120deg, var(--cyan), var(--accent) 45%, var(--accent-2) 75%, var(--pink));
   }
   * { box-sizing: border-box; }
@@ -40,6 +40,7 @@
     -webkit-font-smoothing: antialiased;
   }
   code, .mono { font-family: "JetBrains Mono", ui-monospace, monospace; }
+  svg { display: block; }
 
   /* ---- Ambient animated background ---- */
   #bgFx { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
@@ -67,24 +68,24 @@
   }
   canvas#stars { position: fixed; inset: 0; z-index: 0; opacity: 0.55; pointer-events: none; }
 
-  .wrap { position: relative; z-index: 1; max-width: 1000px; margin: 0 auto; padding: 32px 20px 80px; }
+  .wrap { position: relative; z-index: 1; max-width: 1080px; margin: 0 auto; padding: 32px 20px 80px; }
 
-  header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; animation: fadeDown .6s ease both; }
+  header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 26px; animation: fadeDown .6s ease both; }
   .brand { display: flex; align-items: center; gap: 13px; }
   .brand .logo {
-    width: 40px; height: 40px; border-radius: 11px; position: relative;
+    width: 42px; height: 42px; border-radius: 12px; position: relative;
     display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px;
     background: var(--panel-solid); color: #fff; letter-spacing: 0.02em;
   }
   .brand .logo::before {
-    content: ""; position: absolute; inset: -2px; border-radius: 13px; z-index: -1;
+    content: ""; position: absolute; inset: -2px; border-radius: 14px; z-index: -1;
     background: var(--grad); background-size: 300% 300%;
     animation: gradShift 6s ease infinite;
   }
   .brand .logo span { position: relative; z-index: 1; background: var(--grad); background-size: 300% 300%;
     -webkit-background-clip: text; background-clip: text; color: transparent; animation: gradShift 6s ease infinite; }
   .brand h1 {
-    font-size: 20px; margin: 0; letter-spacing: -0.01em; font-weight: 700;
+    font-size: 21px; margin: 0; letter-spacing: -0.01em; font-weight: 700;
     background: linear-gradient(90deg, #fff, #c7cdea 70%);
     -webkit-background-clip: text; background-clip: text; color: transparent;
   }
@@ -92,11 +93,16 @@
   @keyframes gradShift { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
 
   #userBar { display: none; align-items: center; gap: 14px; font-size: 13px; color: var(--muted); }
-  #userBar .dot-live { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); display: inline-block; margin-right: 7px; animation: blip 2s infinite; }
+  .status-chip {
+    display: flex; align-items: center; gap: 7px; padding: 6px 12px; border-radius: 20px;
+    background: rgba(53,234,176,0.08); border: 1px solid rgba(53,234,176,0.25);
+    font-family: "JetBrains Mono", monospace; font-size: 11px; color: var(--green); letter-spacing: 0.02em;
+  }
+  .dot-live { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); display: inline-block; animation: blip 2s infinite; }
   @keyframes blip { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
   #userBar button {
     background: var(--panel-2); border: 1px solid var(--border); color: var(--text);
-    padding: 7px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; font-family: inherit;
+    padding: 7px 14px; border-radius: 9px; cursor: pointer; font-size: 12px; font-family: inherit;
     transition: all .18s ease; backdrop-filter: blur(6px);
   }
   #userBar button:hover { border-color: var(--cyan); box-shadow: 0 0 14px rgba(79,240,255,0.25); color: #fff; }
@@ -108,6 +114,7 @@
     position: relative; overflow: hidden;
     box-shadow: 0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.04);
     animation: fadeUp .6s ease both;
+    transition: border-color .2s ease, transform .2s ease;
   }
   .card::before {
     content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px;
@@ -119,6 +126,7 @@
     margin: 0 0 18px; font-family: "JetBrains Mono", monospace; display: flex; align-items: center; gap: 8px;
   }
   h2::before { content: ""; width: 6px; height: 6px; border-radius: 2px; background: var(--grad); box-shadow: 0 0 8px var(--cyan); }
+  h2 .h2-right { margin-left: auto; text-transform: none; letter-spacing: 0; font-size: 11px; color: var(--muted); }
 
   @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes fadeDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
@@ -154,66 +162,135 @@
   /* ---- App ---- */
   #app { display: none; }
 
+  /* ---- Stat cards ---- */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+  .stat {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 13px; padding: 16px 18px;
+    backdrop-filter: blur(16px) saturate(140%); position: relative; overflow: hidden;
+    animation: fadeUp .6s ease both; transition: transform .2s ease, border-color .2s ease;
+  }
+  .stat:hover { transform: translateY(-2px); border-color: var(--border-strong); }
+  .stat::after {
+    content: ""; position: absolute; right: -20px; top: -20px; width: 90px; height: 90px; border-radius: 50%;
+    background: var(--stat-glow, radial-gradient(circle, rgba(108,143,255,.25), transparent 70%)); filter: blur(6px);
+  }
+  .stat .stat-icon { width: 26px; height: 26px; margin-bottom: 10px; opacity: 0.9; color: var(--stat-color, var(--accent)); }
+  .stat .stat-num {
+    font-family: "JetBrains Mono", monospace; font-size: 26px; font-weight: 600; line-height: 1;
+    color: var(--stat-color, var(--text));
+  }
+  .stat .stat-label { font-size: 11px; color: var(--muted); margin-top: 6px; text-transform: uppercase; letter-spacing: 0.08em; }
+  .stat.s-total { --stat-color: var(--text); }
+  .stat.s-run { --stat-color: var(--accent); --stat-glow: radial-gradient(circle, rgba(108,143,255,.3), transparent 70%); }
+  .stat.s-ok { --stat-color: var(--green); --stat-glow: radial-gradient(circle, rgba(53,234,176,.3), transparent 70%); }
+  .stat.s-fail { --stat-color: var(--red); --stat-glow: radial-gradient(circle, rgba(255,92,138,.3), transparent 70%); }
+
+  /* ---- Dropzone ---- */
   .dropzone {
-    border: 1.5px dashed var(--border-strong); border-radius: var(--radius); padding: 36px;
-    text-align: center; color: var(--muted); cursor: pointer; transition: all .2s ease;
+    border: 1.5px dashed var(--border-strong); border-radius: var(--radius); padding: 42px 30px;
+    text-align: center; color: var(--muted); cursor: pointer; transition: all .25s ease;
     background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
     position: relative;
   }
   .dropzone:hover, .dropzone.drag {
     border-color: var(--cyan); color: var(--text);
-    box-shadow: 0 0 0 1px rgba(79,240,255,0.15), 0 0 30px rgba(79,240,255,0.12) inset;
-    background: linear-gradient(180deg, rgba(79,240,255,0.05), transparent);
+    box-shadow: 0 0 0 1px rgba(79,240,255,0.15), 0 0 40px rgba(79,240,255,0.12) inset;
+    background: linear-gradient(180deg, rgba(79,240,255,0.06), transparent);
   }
+  .dropzone.drag .upload-icon { transform: translateY(-4px) scale(1.05); }
   .dropzone input { display: none; }
+  .upload-icon {
+    width: 56px; height: 56px; margin: 0 auto 14px; color: var(--cyan); opacity: 0.9;
+    animation: float 3.2s ease-in-out infinite; transition: transform .25s ease;
+  }
+  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+  .dropzone .main-txt { font-size: 15px; color: var(--text); font-weight: 500; }
+  .dropzone .main-txt strong { color: var(--cyan); font-weight: 600; }
   .dropzone .hint { font-size: 12px; margin-top: 8px; font-family: "JetBrains Mono", monospace; color: #5c6480; }
-  .dropzone strong { color: var(--cyan); font-weight: 600; }
+  .filetypes { display: flex; gap: 8px; justify-content: center; margin-top: 16px; }
+  .filetype-chip {
+    font-family: "JetBrains Mono", monospace; font-size: 10.5px; font-weight: 600; letter-spacing: 0.03em;
+    padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border); color: var(--muted);
+    background: rgba(255,255,255,0.02);
+  }
 
   /* ---- Pipeline visual ---- */
-  .pipeline { display: flex; align-items: center; margin: 24px 0 4px; }
+  .pipeline { display: flex; align-items: flex-start; margin: 28px 0 4px; position: relative; }
+  .pipeline-track {
+    position: absolute; top: 21px; left: calc(12.5% ); right: calc(12.5%); height: 2px;
+    background: var(--border); z-index: 0; border-radius: 2px; overflow: hidden;
+  }
+  .pipeline-track .fill {
+    height: 100%; width: 0%; background: var(--grad); background-size: 200% 100%;
+    transition: width .5s ease; animation: gradShift 4s linear infinite;
+  }
   .stage {
-    flex: 1; text-align: center; padding: 14px 4px 0; font-size: 11px; color: var(--muted);
-    border-top: 3px solid var(--border); position: relative; font-family: "JetBrains Mono", monospace;
-    letter-spacing: 0.02em; transition: all .3s ease;
+    flex: 1; text-align: center; padding: 0 4px; font-size: 11px; color: var(--muted); position: relative;
+    z-index: 1; font-family: "JetBrains Mono", monospace; letter-spacing: 0.02em; transition: all .3s ease;
   }
   .stage .dot {
-    width: 11px; height: 11px; border-radius: 50%; background: var(--border-strong);
-    margin: -19px auto 8px; border: 3px solid #0a0d16; transition: all .3s ease;
+    width: 42px; height: 42px; border-radius: 50%; background: var(--panel-solid);
+    margin: 0 auto 10px; border: 2px solid var(--border-strong); transition: all .3s ease;
+    display: flex; align-items: center; justify-content: center; color: var(--muted);
   }
-  .stage.done { border-color: var(--green); color: var(--text); }
-  .stage.done .dot { background: var(--green); box-shadow: 0 0 10px rgba(53,234,176,0.6); }
-  .stage.active { border-image: var(--grad) 1; color: #fff; }
-  .stage.active .dot { background: var(--cyan); box-shadow: 0 0 0 5px rgba(79,240,255,.2); animation: pulse 1.4s infinite; }
-  .stage.failed { border-color: var(--red); color: var(--red); }
-  .stage.failed .dot { background: var(--red); box-shadow: 0 0 10px rgba(255,92,138,0.6); }
-  @keyframes pulse { 0%,100% { box-shadow: 0 0 0 5px rgba(79,240,255,.22), 0 0 12px rgba(79,240,255,.5); } 50% { box-shadow: 0 0 0 9px rgba(79,240,255,.06), 0 0 18px rgba(79,240,255,.7); } }
+  .stage .dot svg { width: 19px; height: 19px; }
+  .stage.done .dot { background: rgba(53,234,176,0.12); border-color: var(--green); color: var(--green); box-shadow: 0 0 16px rgba(53,234,176,0.35); }
+  .stage.done { color: var(--text); }
+  .stage.active .dot { background: rgba(79,240,255,0.12); border-color: var(--cyan); color: var(--cyan); animation: pulse 1.4s infinite; }
+  .stage.active { color: #fff; }
+  .stage.failed .dot { background: rgba(255,92,138,0.12); border-color: var(--red); color: var(--red); box-shadow: 0 0 16px rgba(255,92,138,0.35); }
+  .stage.failed { color: var(--red); }
+  @keyframes pulse { 0%,100% { box-shadow: 0 0 0 5px rgba(79,240,255,.18), 0 0 14px rgba(79,240,255,.5); } 50% { box-shadow: 0 0 0 10px rgba(79,240,255,.05), 0 0 20px rgba(79,240,255,.7); } }
 
-  /* ---- Jobs table ---- */
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th {
-    text-align: left; color: var(--muted); font-weight: 600; font-size: 10.5px; text-transform: uppercase;
-    letter-spacing: .08em; padding: 10px; border-bottom: 1px solid var(--border); font-family: "JetBrains Mono", monospace;
+  /* ---- Job console ---- */
+  .job-row {
+    display: grid; grid-template-columns: 30px 1.6fr 100px 110px 1.4fr 90px;
+    align-items: center; gap: 12px; padding: 12px 10px; border-bottom: 1px solid var(--border);
+    font-size: 13px; transition: background .15s ease; animation: rowIn .4s ease both;
   }
-  td { padding: 12px 10px; border-bottom: 1px solid var(--border); }
-  tr { transition: background .15s ease; }
-  tbody tr:hover { background: rgba(255,255,255,0.025); }
-  tr:last-child td { border-bottom: none; }
+  @keyframes rowIn { from { opacity: 0; transform: translateX(-6px); } to { opacity: 1; transform: translateX(0); } }
+  .job-row:hover { background: rgba(255,255,255,0.025); }
+  .job-row:last-child { border-bottom: none; }
+  .job-row.head {
+    color: var(--muted); font-weight: 600; font-size: 10.5px; text-transform: uppercase;
+    letter-spacing: .08em; font-family: "JetBrains Mono", monospace; animation: none;
+  }
+  .file-icon {
+    width: 26px; height: 26px; border-radius: 7px; display: flex; align-items: center; justify-content: center;
+    font-family: "JetBrains Mono", monospace; font-size: 9px; font-weight: 700; letter-spacing: -0.02em;
+    background: rgba(108,143,255,0.12); color: var(--accent); border: 1px solid rgba(108,143,255,0.25);
+  }
+  .file-icon.xml { background: rgba(255,193,94,0.12); color: var(--amber); border-color: rgba(255,193,94,0.25); }
+  .file-icon.csv { background: rgba(53,234,176,0.12); color: var(--green); border-color: rgba(53,234,176,0.25); }
+  .file-icon.json { background: rgba(176,108,255,0.12); color: var(--accent-2); border-color: rgba(176,108,255,0.25); }
+  .fname { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .badge {
-    display: inline-block; padding: 4px 11px; border-radius: 20px; font-size: 10.5px; font-weight: 700;
-    font-family: "JetBrains Mono", monospace; letter-spacing: 0.03em; border: 1px solid transparent;
+    display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 700;
+    font-family: "JetBrains Mono", monospace; letter-spacing: 0.03em; border: 1px solid transparent; width: fit-content;
   }
-  .badge.COMPLETE { background: rgba(53,234,176,.12); color: var(--green); border-color: rgba(53,234,176,.3); box-shadow: 0 0 12px rgba(53,234,176,.15); }
-  .badge.RUNNING { background: rgba(108,143,255,.12); color: var(--accent); border-color: rgba(108,143,255,.3); box-shadow: 0 0 12px rgba(108,143,255,.15); }
-  .badge.FAILED { background: rgba(255,92,138,.12); color: var(--red); border-color: rgba(255,92,138,.3); box-shadow: 0 0 12px rgba(255,92,138,.15); }
+  .badge::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+  .badge.COMPLETE { background: rgba(53,234,176,.12); color: var(--green); border-color: rgba(53,234,176,.3); }
+  .badge.RUNNING { background: rgba(108,143,255,.12); color: var(--accent); border-color: rgba(108,143,255,.3); }
+  .badge.RUNNING::before { animation: blip 1.2s infinite; }
+  .badge.FAILED { background: rgba(255,92,138,.12); color: var(--red); border-color: rgba(255,92,138,.3); }
   .badge.VALID { background: rgba(108,143,255,.12); color: var(--accent); border-color: rgba(108,143,255,.3); }
   .muted { color: var(--muted); }
-  .empty { text-align: center; color: var(--muted); padding: 34px 0; font-size: 13px; font-family: "JetBrains Mono", monospace; }
+  .msg-cell { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); font-size: 12px; }
+  .time-cell { font-family: "JetBrains Mono", monospace; font-size: 11.5px; color: var(--muted); text-align: right; }
+  .empty { text-align: center; color: var(--muted); padding: 46px 0; font-size: 13px; font-family: "JetBrains Mono", monospace; }
+  .empty svg { width: 34px; height: 34px; margin: 0 auto 12px; opacity: 0.35; }
 
   footer {
     text-align: center; color: var(--muted); font-size: 11px; margin-top: 44px;
     font-family: "JetBrains Mono", monospace; letter-spacing: 0.01em;
   }
   footer a { color: var(--muted); }
+
+  @media (max-width: 720px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .job-row { grid-template-columns: 24px 1.4fr 90px; }
+    .job-row .col-stage, .job-row .col-msg, .job-row .col-time { display: none; }
+  }
 </style>
 </head>
 <body>
@@ -230,7 +307,8 @@
       </div>
     </div>
     <div id="userBar">
-      <span id="userEmail"><span class="dot-live"></span></span>
+      <span class="status-chip"><span class="dot-live"></span>Pipeline online</span>
+      <span id="userEmail"></span>
       <button id="logoutBtn">Sign out</button>
     </div>
   </header>
@@ -265,31 +343,80 @@
 
   <!-- APP -->
   <div id="app">
-    <div class="card">
-      <h2>Upload a file</h2>
-      <div class="dropzone" id="dropzone">
-        <div>Drop an <strong>.xml</strong>, <strong>.csv</strong>, or <strong>.json</strong> file here, or click to browse</div>
-        <div class="hint">automatically validated → transformed → rule-checked by the pipeline</div>
-        <input type="file" id="fileInput" accept=".xml,.csv,.json" />
-      </div>
 
-      <div class="pipeline" id="pipelinePreview">
-        <div class="stage" data-stage="validate"><div class="dot"></div>Validate</div>
-        <div class="stage" data-stage="transform"><div class="dot"></div>Transform</div>
-        <div class="stage" data-stage="apply_rules"><div class="dot"></div>Apply Rules</div>
-        <div class="stage" data-stage="complete"><div class="dot"></div>Notify</div>
+    <div class="stats">
+      <div class="stat s-total">
+        <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h10"/></svg>
+        <div class="stat-num" id="statTotal">0</div>
+        <div class="stat-label">Total jobs</div>
+      </div>
+      <div class="stat s-run">
+        <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v3m0 12v3m9-9h-3M6 12H3m15.36 6.36l-2.12-2.12M8.76 8.76 6.64 6.64m10.72 0-2.12 2.12M8.76 15.24l-2.12 2.12"/></svg>
+        <div class="stat-num" id="statRunning">0</div>
+        <div class="stat-label">Running</div>
+      </div>
+      <div class="stat s-ok">
+        <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m5 13 4 4L19 7"/></svg>
+        <div class="stat-num" id="statOk">0</div>
+        <div class="stat-label">Completed</div>
+      </div>
+      <div class="stat s-fail">
+        <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/></svg>
+        <div class="stat-num" id="statFail">0</div>
+        <div class="stat-label">Failed</div>
       </div>
     </div>
 
     <div class="card">
-      <h2>Job history</h2>
-      <table id="jobsTable">
-        <thead>
-          <tr><th>File</th><th>Status</th><th>Stage</th><th>Message</th><th>Updated</th></tr>
-        </thead>
-        <tbody id="jobsBody"></tbody>
-      </table>
-      <div class="empty" id="jobsEmpty" style="display:none">No jobs yet — upload a file above to see the pipeline run.</div>
+      <h2>Upload a file</h2>
+      <div class="dropzone" id="dropzone">
+        <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 0 1-.88-7.9A5.5 5.5 0 0 1 16.5 6a4.5 4.5 0 0 1 1.5 8.75"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 20v-7m0 0-3 3m3-3 3 3"/>
+        </svg>
+        <div class="main-txt">Drop a file here, or <strong>click to browse</strong></div>
+        <div class="hint">automatically validated → transformed → rule-checked by the pipeline</div>
+        <div class="filetypes">
+          <span class="filetype-chip">.XML</span>
+          <span class="filetype-chip">.CSV</span>
+          <span class="filetype-chip">.JSON</span>
+        </div>
+        <input type="file" id="fileInput" accept=".xml,.csv,.json" />
+      </div>
+
+      <div class="pipeline" id="pipelinePreview">
+        <div class="pipeline-track"><div class="fill" id="pipelineFill"></div></div>
+        <div class="stage" data-stage="validate">
+          <div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m5 13 4 4L19 7"/></svg></div>
+          Validate
+        </div>
+        <div class="stage" data-stage="transform">
+          <div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7h11m0 0-3-3m3 3-3 3M20 17H9m0 0 3 3m-3-3 3-3"/></svg></div>
+          Transform
+        </div>
+        <div class="stage" data-stage="apply_rules">
+          <div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3 4 6v6c0 4.5 3.2 7.7 8 9 4.8-1.3 8-4.5 8-9V6l-8-3Z"/></svg></div>
+          Apply Rules
+        </div>
+        <div class="stage" data-stage="complete">
+          <div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14.2V11a6 6 0 0 0-4-5.65V5a2 2 0 1 0-4 0v.35A6 6 0 0 0 6 11v3.2a2 2 0 0 1-.6 1.4L4 17h5m6 0v1a3 3 0 1 1-6 0v-1m6 0H9"/></svg></div>
+          Notify
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Job history <span class="h2-right" id="jobsCount"></span></h2>
+      <div id="jobsList">
+        <div class="job-row head">
+          <span></span><span>File</span><span>Status</span><span class="col-stage">Stage</span><span class="col-msg">Message</span><span class="col-time">Updated</span>
+        </div>
+        <div id="jobsBody"></div>
+      </div>
+      <div class="empty" id="jobsEmpty" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.5L17 7.5V19a2 2 0 0 1-2 2Z"/></svg>
+        No jobs yet — upload a file above to see the pipeline run.
+      </div>
     </div>
   </div>
 
@@ -438,7 +565,7 @@ function enterApp() {
   document.getElementById("authCard").style.display = "none";
   document.getElementById("app").style.display = "block";
   document.getElementById("userBar").style.display = "flex";
-  document.getElementById("userEmail").innerHTML = '<span class="dot-live"></span>' + session.email;
+  document.getElementById("userEmail").textContent = session.email;
   refreshJobs();
   pollTimer = setInterval(refreshJobs, 4000);
 }
@@ -496,35 +623,77 @@ async function refreshJobs() {
 }
 
 const STAGES = ["validate", "transform", "apply_rules", "complete"];
+
+function renderStats(jobs) {
+  const total = jobs.length;
+  const running = jobs.filter(j => j.status === "RUNNING").length;
+  const ok = jobs.filter(j => j.status === "COMPLETE").length;
+  const fail = jobs.filter(j => j.status === "FAILED").length;
+  document.getElementById("statTotal").textContent = total;
+  document.getElementById("statRunning").textContent = running;
+  document.getElementById("statOk").textContent = ok;
+  document.getElementById("statFail").textContent = fail;
+}
+
+function fileExt(name) {
+  const m = /\.([a-z0-9]+)$/i.exec(name || "");
+  return m ? m[1].toLowerCase() : "";
+}
+
+function timeAgo(iso) {
+  if (!iso) return "-";
+  const d = new Date(iso);
+  const s = Math.floor((Date.now() - d.getTime()) / 1000);
+  if (s < 5) return "just now";
+  if (s < 60) return s + "s ago";
+  if (s < 3600) return Math.floor(s / 60) + "m ago";
+  if (s < 86400) return Math.floor(s / 3600) + "h ago";
+  return d.toLocaleDateString();
+}
+
 function renderJobs(jobs) {
   const body = document.getElementById("jobsBody");
   const empty = document.getElementById("jobsEmpty");
+  const list = document.getElementById("jobsList");
+  const count = document.getElementById("jobsCount");
   body.innerHTML = "";
-  empty.style.display = jobs.length ? "none" : "block";
+  const hasJobs = jobs.length > 0;
+  empty.style.display = hasJobs ? "none" : "block";
+  list.style.display = hasJobs ? "block" : "none";
+  count.textContent = hasJobs ? `${jobs.length} total` : "";
 
+  renderStats(jobs);
   if (jobs[0]) updatePipelinePreview(jobs[0]);
+  else updatePipelinePreview(null);
 
   for (const job of jobs) {
-    const tr = document.createElement("tr");
+    const row = document.createElement("div");
+    row.className = "job-row";
+    const ext = fileExt(job.filename);
     const updated = job.updated_at ? new Date(job.updated_at).toLocaleString() : "-";
-    tr.innerHTML = `
-      <td>${escapeHtml(job.filename || "-")}</td>
-      <td><span class="badge ${job.status}">${job.status}</span></td>
-      <td class="muted">${escapeHtml(job.stage || "-")}</td>
-      <td class="muted">${escapeHtml((job.message || "").toString()).slice(0,80)}</td>
-      <td class="muted">${updated}</td>`;
-    body.appendChild(tr);
+    row.innerHTML = `
+      <span class="file-icon ${ext}">${escapeHtml(ext || "?").slice(0,4)}</span>
+      <span class="fname" title="${escapeHtml(job.filename || "-")}">${escapeHtml(job.filename || "-")}</span>
+      <span><span class="badge ${job.status}">${job.status}</span></span>
+      <span class="muted col-stage">${escapeHtml(job.stage || "-")}</span>
+      <span class="msg-cell col-msg" title="${escapeHtml((job.message||"").toString())}">${escapeHtml((job.message || "").toString()).slice(0,80)}</span>
+      <span class="time-cell col-time" title="${updated}">${timeAgo(job.updated_at)}</span>`;
+    body.appendChild(row);
   }
 }
 
 function updatePipelinePreview(latestJob) {
-  const idx = STAGES.indexOf(latestJob.stage);
+  const idx = latestJob ? STAGES.indexOf(latestJob.stage) : -1;
+  const fill = document.getElementById("pipelineFill");
+  let pct = 0;
   document.querySelectorAll("#pipelinePreview .stage").forEach((el, i) => {
     el.classList.remove("done", "active", "failed");
-    if (latestJob.status === "FAILED" && i === idx) el.classList.add("failed");
-    else if (i < idx || (latestJob.status === "COMPLETE")) el.classList.add("done");
-    else if (i === idx) el.classList.add("active");
+    if (!latestJob) return;
+    if (latestJob.status === "FAILED" && i === idx) { el.classList.add("failed"); pct = (i / (STAGES.length - 1)) * 100; }
+    else if (i < idx || latestJob.status === "COMPLETE") { el.classList.add("done"); pct = latestJob.status === "COMPLETE" ? 100 : Math.max(pct, (i / (STAGES.length - 1)) * 100); }
+    else if (i === idx) { el.classList.add("active"); pct = Math.max(pct, (i / (STAGES.length - 1)) * 100); }
   });
+  fill.style.width = pct + "%";
 }
 
 function escapeHtml(s) {
