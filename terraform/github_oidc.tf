@@ -152,7 +152,7 @@ resource "aws_iam_role_policy" "github_actions_deploy" {
       {
         Sid      = "AppLogGroupsDescribe"
         Effect   = "Allow"
-        Action   = ["logs:DescribeLogGroups"]
+        Action   = ["logs:DescribeLogGroups", "logs:ListTagsForResource"]
         Resource = "*"
       },
       {
@@ -175,6 +175,15 @@ resource "aws_iam_role_policy" "github_actions_deploy" {
         Effect   = "Allow"
         Action   = "cloudtrail:*"
         Resource = "arn:aws:cloudtrail:${var.aws_region}:${local.account_id}:trail/${local.name_prefix}-*"
+      },
+      {
+        Sid    = "AppCloudTrailDescribe"
+        Effect = "Allow"
+        Action = [
+          "cloudtrail:DescribeTrails", "cloudtrail:GetTrailStatus", "cloudtrail:GetEventSelectors",
+          "cloudtrail:GetInsightSelectors", "cloudtrail:ListTags",
+        ]
+        Resource = "*"
       },
       {
         Sid      = "AppBudget"
@@ -236,6 +245,7 @@ resource "aws_iam_role_policy" "github_actions_deploy" {
           "cloudfront:ListDistributions", "cloudfront:CreateInvalidation", "cloudfront:GetInvalidation",
           "cloudfront:CreateOriginAccessControl", "cloudfront:GetOriginAccessControl",
           "cloudfront:UpdateOriginAccessControl", "cloudfront:DeleteOriginAccessControl",
+          "cloudfront:ListTagsForResource",
         ]
         Resource = "*" # CloudFront's IAM actions do not support resource-level permissions at all
       },
