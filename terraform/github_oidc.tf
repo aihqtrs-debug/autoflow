@@ -52,8 +52,11 @@ resource "aws_iam_role" "github_actions_deploy" {
         StringEquals = {
           "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
         }
+        # A single scalar pattern matching GitHub's current immutable-ID sub
+        # claim format (confirmed via CloudTrail): "repo:owner@ID/repo@ID:ref:...",
+        # not the classic "repo:owner/repo:ref:..." every tutorial still shows.
         StringLike = {
-          "token.actions.githubusercontent.com:sub" = "repo:${var.github_repo}:ref:refs/heads/${var.github_branch}"
+          "token.actions.githubusercontent.com:sub" = "repo:${local.github_owner}@*/${local.github_repo_name}@*:ref:refs/heads/${var.github_branch}"
         }
       }
     }]
