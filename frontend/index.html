@@ -83,12 +83,12 @@
     font-family: "JetBrains Mono", monospace; font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.09em;
     color: var(--aws-orange); margin-bottom: 7px; opacity: 0.9;
   }
-  .skill-list { display: flex; flex-direction: column; gap: 6px; }
-  .skill-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text); }
-  .skill-item .sdot {
-    width: 6px; height: 6px; border-radius: 50%; background: var(--si-color, var(--cyan));
-    box-shadow: 0 0 6px var(--si-color, var(--cyan)); flex-shrink: 0;
+  .skill-list { display: flex; flex-direction: column; gap: 7px; }
+  .skill-badge {
+    display: block; height: 22px; width: auto; border-radius: 6px;
+    filter: saturate(1.05); transition: transform .18s ease, filter .18s ease;
   }
+  .skill-badge:hover { transform: translateX(3px) scale(1.04); filter: saturate(1.35) brightness(1.12); }
   @media (max-width: 980px) {
     .wrap { grid-template-columns: 1fr; }
     .skillbar { position: static; }
@@ -415,59 +415,59 @@
     <div class="skill-group">
       <div class="skill-group-title">Compute &amp; orchestration</div>
       <div class="skill-list">
-        <div class="skill-item" style="--si-color:#FF9900"><span class="sdot"></span>Lambda</div>
-        <div class="skill-item" style="--si-color:#FF9900"><span class="sdot"></span>Step Functions</div>
+        <img class="skill-badge" src="https://img.shields.io/badge/Lambda-FF9900?logo=awslambda&amp;logoColor=white" alt="AWS Lambda" />
+        <img class="skill-badge" src="https://img.shields.io/badge/Step%20Functions-FF9900?logo=amazonaws&amp;logoColor=white" alt="Step Functions" />
       </div>
     </div>
     <div class="skill-group">
       <div class="skill-group-title">Storage &amp; data</div>
       <div class="skill-list">
-        <div class="skill-item" style="--si-color:#ff6cd6"><span class="sdot"></span>S3</div>
-        <div class="skill-item" style="--si-color:#35eab0"><span class="sdot"></span>DynamoDB</div>
+        <img class="skill-badge" src="https://img.shields.io/badge/S3-E05EF7?logo=amazons3&amp;logoColor=white" alt="Amazon S3" />
+        <img class="skill-badge" src="https://img.shields.io/badge/DynamoDB-4053D6?logo=amazondynamodb&amp;logoColor=white" alt="DynamoDB" />
       </div>
     </div>
     <div class="skill-group">
       <div class="skill-group-title">Networking &amp; delivery</div>
       <div class="skill-list">
-        <div class="skill-item" style="--si-color:#4ff0ff"><span class="sdot"></span>API Gateway (HTTP)</div>
-        <div class="skill-item" style="--si-color:#6c8fff"><span class="sdot"></span>CloudFront + OAC</div>
+        <img class="skill-badge" src="https://img.shields.io/badge/API%20Gateway-16C1FF?logo=amazonaws&amp;logoColor=white" alt="API Gateway" />
+        <img class="skill-badge" src="https://img.shields.io/badge/CloudFront%20%2B%20OAC-5B7FFF?logo=amazonaws&amp;logoColor=white" alt="CloudFront" />
       </div>
     </div>
     <div class="skill-group">
       <div class="skill-group-title">Identity &amp; security</div>
       <div class="skill-list">
-        <div class="skill-item" style="--si-color:#b06cff"><span class="sdot"></span>Cognito</div>
-        <div class="skill-item" style="--si-color:#b06cff"><span class="sdot"></span>IAM least-privilege</div>
-        <div class="skill-item" style="--si-color:#b06cff"><span class="sdot"></span>OIDC federation</div>
+        <img class="skill-badge" src="https://img.shields.io/badge/Cognito-9B5CF6?logo=amazonaws&amp;logoColor=white" alt="Cognito" />
+        <img class="skill-badge" src="https://img.shields.io/badge/IAM%20least--privilege-9B5CF6?logo=amazoniam&amp;logoColor=white" alt="IAM least privilege" />
+        <img class="skill-badge" src="https://img.shields.io/badge/OIDC%20federation-9B5CF6?logo=openid&amp;logoColor=white" alt="OIDC federation" />
       </div>
     </div>
     <div class="skill-group">
       <div class="skill-group-title">Messaging &amp; events</div>
       <div class="skill-list">
-        <div class="skill-item" style="--si-color:#ffc15e"><span class="sdot"></span>EventBridge</div>
-        <div class="skill-item" style="--si-color:#35eab0"><span class="sdot"></span>SNS</div>
-        <div class="skill-item" style="--si-color:#ff5c8a"><span class="sdot"></span>SQS</div>
+        <img class="skill-badge" src="https://img.shields.io/badge/EventBridge-FFB74D?logo=amazonaws&amp;logoColor=white" alt="EventBridge" />
+        <img class="skill-badge" src="https://img.shields.io/badge/SNS-2FD9A8?logo=amazonaws&amp;logoColor=white" alt="SNS" />
+        <img class="skill-badge" src="https://img.shields.io/badge/SQS-FF6699?logo=amazonaws&amp;logoColor=white" alt="SQS" />
       </div>
     </div>
     <div class="skill-group">
       <div class="skill-group-title">Observability</div>
       <div class="skill-list">
-        <div class="skill-item" style="--si-color:#4ff0ff"><span class="sdot"></span>CloudWatch</div>
-        <div class="skill-item" style="--si-color:#4ff0ff"><span class="sdot"></span>X-Ray</div>
-        <div class="skill-item" style="--si-color:#ff5c8a"><span class="sdot"></span>CloudTrail</div>
+        <img class="skill-badge" src="https://img.shields.io/badge/CloudWatch-16C1FF?logo=amazoncloudwatch&amp;logoColor=white" alt="CloudWatch" />
+        <img class="skill-badge" src="https://img.shields.io/badge/X--Ray-16C1FF?logo=amazonaws&amp;logoColor=white" alt="X-Ray" />
+        <img class="skill-badge" src="https://img.shields.io/badge/CloudTrail-FF6699?logo=amazonaws&amp;logoColor=white" alt="CloudTrail" />
       </div>
     </div>
     <div class="skill-group">
       <div class="skill-group-title">Cost &amp; governance</div>
       <div class="skill-list">
-        <div class="skill-item" style="--si-color:#b06cff"><span class="sdot"></span>AWS Budgets</div>
+        <img class="skill-badge" src="https://img.shields.io/badge/AWS%20Budgets-9B5CF6?logo=amazonaws&amp;logoColor=white" alt="AWS Budgets" />
       </div>
     </div>
     <div class="skill-group">
       <div class="skill-group-title">DevOps / IaC</div>
       <div class="skill-list">
-        <div class="skill-item" style="--si-color:#FF9900"><span class="sdot"></span>Terraform</div>
-        <div class="skill-item" style="--si-color:#6c8fff"><span class="sdot"></span>GitHub Actions CI/CD</div>
+        <img class="skill-badge" src="https://img.shields.io/badge/Terraform-7B42BC?logo=terraform&amp;logoColor=white" alt="Terraform" />
+        <img class="skill-badge" src="https://img.shields.io/badge/GitHub%20Actions%20CI%2FCD-2088FF?logo=githubactions&amp;logoColor=white" alt="GitHub Actions CI/CD" />
       </div>
     </div>
   </aside>
@@ -502,22 +502,6 @@
       <a class="badge-link" href="https://github.com/aihqtrs-debug/autoflow/actions/workflows/deploy.yml" target="_blank" rel="noopener">
         <img class="ci-badge" src="https://github.com/aihqtrs-debug/autoflow/actions/workflows/deploy.yml/badge.svg" alt="CI/CD status" />
       </a>
-    </div>
-    <div class="tech-strip">
-      <span class="tech-pill" style="--tp-color:#FF9900"><span class="sw"></span>Lambda</span>
-      <span class="tech-pill" style="--tp-color:#FF9900"><span class="sw"></span>Step Functions</span>
-      <span class="tech-pill" style="--tp-color:#4ff0ff"><span class="sw"></span>API Gateway</span>
-      <span class="tech-pill" style="--tp-color:#b06cff"><span class="sw"></span>Cognito</span>
-      <span class="tech-pill" style="--tp-color:#35eab0"><span class="sw"></span>DynamoDB</span>
-      <span class="tech-pill" style="--tp-color:#ff6cd6"><span class="sw"></span>S3</span>
-      <span class="tech-pill" style="--tp-color:#6c8fff"><span class="sw"></span>CloudFront</span>
-      <span class="tech-pill" style="--tp-color:#ffc15e"><span class="sw"></span>EventBridge</span>
-      <span class="tech-pill" style="--tp-color:#35eab0"><span class="sw"></span>SNS / SQS</span>
-      <span class="tech-pill" style="--tp-color:#4ff0ff"><span class="sw"></span>CloudWatch + X-Ray</span>
-      <span class="tech-pill" style="--tp-color:#ff5c8a"><span class="sw"></span>CloudTrail</span>
-      <span class="tech-pill" style="--tp-color:#b06cff"><span class="sw"></span>AWS Budgets</span>
-      <span class="tech-pill" style="--tp-color:#FF9900"><span class="sw"></span>Terraform</span>
-      <span class="tech-pill" style="--tp-color:#6c8fff"><span class="sw"></span>GitHub Actions OIDC</span>
     </div>
   </div>
 
