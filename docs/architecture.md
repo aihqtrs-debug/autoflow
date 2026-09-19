@@ -118,9 +118,9 @@ Built for a learning project on a personal AWS account with a hard "don't spend 
 constraint. If this were going into a real production environment, here's what would
 change, in priority order:
 
-1. **Remote Terraform state.** State is local to the CloudShell home directory today.
-   Production needs an S3 backend with DynamoDB state locking so more than one person
-   (or one CI run) can safely `apply` at a time.
+1. ~~Remote Terraform state.~~ **Closed.** State now lives in a versioned, encrypted
+   S3 bucket with a DynamoDB lock table (`docs/ci-cd-setup.md`), so CloudShell and
+   GitHub Actions CI runs share one source of truth and can never race each other.
 2. **Per-function IAM roles.** One shared `pipeline_lambda` role is simpler to build
    but violates least-privilege — the `validate` function, for instance, doesn't need
    SNS `Publish` permissions. Production would give each of the 7 Lambdas its own

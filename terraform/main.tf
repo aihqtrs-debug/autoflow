@@ -10,11 +10,22 @@ terraform {
       source  = "hashicorp/archive"
       version = "~> 2.4"
     }
+    tls = {
+      source  = "hashicorp/tls"
+      version = "~> 4.0"
+    }
   }
 
-  # Learning-project note: state is local for now (simplest to get moving).
-  # A production setup would use an S3 backend + DynamoDB lock table for
-  # team collaboration and state locking. We'll add that as a stretch goal.
+  # Remote state: an S3 bucket + DynamoDB lock table, bootstrapped once by
+  # hand (see docs/ci-cd-setup.md) so CloudShell and GitHub Actions always
+  # read/write the exact same state and can never race each other.
+  backend "s3" {
+    bucket         = "autoflow-dev-terraform-state-486758670110"
+    key            = "autoflow/terraform.tfstate"
+    region         = "ap-southeast-2"
+    dynamodb_table = "autoflow-dev-terraform-locks"
+    encrypt        = true
+  }
 }
 
 provider "aws" {

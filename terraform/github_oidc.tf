@@ -25,13 +25,18 @@ locals {
   tf_lock_table   = "${local.name_prefix}-terraform-locks"
 }
 
+# Fetched live rather than hardcoded from memory - AWS validates the actual
+# TLS chain for well-known OIDC providers like GitHub regardless of this
+# value, but the field is still required, and a live fetch is more honest
+# than a thumbprint typed in by hand.
+data "tls_certificate" "github_actions" {
+  url = "https://token.actions.githubusercontent.com"
+}
+
 resource "aws_iam_openid_connect_provider" "github" {
   url             = "https://token.actions.githubusercontent.com"
   client_id_list  = ["sts.amazonaws.com"]
-  thumbprint_list = [
-    "6938fd4d98bab03faadb97b34396831e3780aea", # GitHub Actions OIDC root
-    "1c58a3a8518e8759bf075b76b750d4f2df264fcd", # DigiCert Global Root G2 (rotated intermediate)
-  ]
+  thumbprint_list = [data.tls_certificate.github_actions.certificates[0].sha1_fingerprint]
 }
 
 resource "aws_iam_role" "github_actions_deploy" {
