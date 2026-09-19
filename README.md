@@ -46,7 +46,7 @@ autoflow/
   terraform/     # all infrastructure, one `terraform apply` deploys everything
   lambda/        # one folder per Lambda function
   frontend/      # the dashboard (single static HTML/JS file)
-  docs/          # architecture blueprint, runbook, resume writeup
+  docs/          # architecture blueprint, CI/CD setup, cost/teardown, resume writeup
   .github/workflows/deploy.yml
 ```
 
@@ -73,6 +73,13 @@ Everything here runs inside the AWS Free Tier at hobby-project scale. See `docs/
 - **Audit trail:** a multi-region CloudTrail trail logs every management-plane API call in the account (who did what, when, from where), stored in a dedicated, public-access-blocked S3 bucket with a 90-day lifecycle expiration.
 - **API governance:** throttling (10 req/s steady, 20 burst) and structured JSON access logs on every API Gateway request.
 
+## CI/CD
+
+GitHub Actions deploys on every push to `main`, authenticating to AWS via OIDC
+federation (no stored access keys). See `docs/ci-cd-setup.md` for the exact one-time
+setup — remote Terraform state (S3 + DynamoDB lock table) plus a repo/branch-scoped
+IAM deploy role (`terraform/github_oidc.tf`).
+
 ## What I'd do differently in production
 
-See `docs/architecture.md#honest-tradeoffs` — remote Terraform state, per-function IAM roles, and a non-root operating identity are the top three. Observability and native WebSocket push (instead of polling) have both been addressed — see above and the tradeoffs doc for what's still partial.
+See `docs/architecture.md#honest-tradeoffs` — per-function IAM roles and a non-root operating identity are the top two remaining. Remote state, observability, and native WebSocket push (instead of polling) have all been addressed — see above and the tradeoffs doc for what's still partial.

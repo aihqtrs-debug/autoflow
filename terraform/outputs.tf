@@ -37,3 +37,7 @@ output "xray_console_url" {
 output "cloudtrail_bucket" {
   value = aws_s3_bucket.cloudtrail.bucket
 }
+output "github_actions_role_arn" {
+  value       = aws_iam_role.github_actions_deploy.arn
+  description = "Paste this into the GitHub repo secret AWS_DEPLOY_ROLE_ARN"
+}
