@@ -23,9 +23,9 @@ variable "notification_email" {
 }
 
 variable "github_repo" {
-  description = "GitHub repo allowed to assume the CI/CD deploy role, as \"org-or-user/repo-name\". The default matches no real repo, so the role is inert until this is set to the real value."
+  description = "GitHub repo allowed to assume the CI/CD deploy role, as \"org-or-user/repo-name\"."
   type        = string
-  default     = "CHANGEME/CHANGEME"
+  default     = "aihqtrs-debug/autoflow"
 }
 
 variable "github_branch" {
