@@ -150,6 +150,12 @@ resource "aws_iam_role_policy" "github_actions_deploy" {
         Resource = "*" # this action family is account-scoped, not resource-scoped, in the IAM policy language
       },
       {
+        Sid      = "AppLogGroupsDescribe"
+        Effect   = "Allow"
+        Action   = ["logs:DescribeLogGroups"]
+        Resource = "*"
+      },
+      {
         Sid      = "AppCloudWatchAlarmsAndDashboard"
         Effect   = "Allow"
         Action   = ["cloudwatch:*"]
@@ -183,7 +189,7 @@ resource "aws_iam_role_policy" "github_actions_deploy" {
           "iam:CreateRole", "iam:GetRole", "iam:DeleteRole", "iam:UpdateRole",
           "iam:UpdateAssumeRolePolicy", "iam:TagRole", "iam:UntagRole", "iam:ListRoleTags",
           "iam:PutRolePolicy", "iam:GetRolePolicy", "iam:DeleteRolePolicy", "iam:ListRolePolicies",
-          "iam:PassRole",
+          "iam:PassRole", "iam:ListAttachedRolePolicies",
         ]
         Resource = "arn:aws:iam::${local.account_id}:role/${local.name_prefix}-*"
       },
