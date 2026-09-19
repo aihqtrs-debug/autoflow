@@ -23,6 +23,14 @@ locals {
   # to avoid the chicken-and-egg problem of Terraform managing its own backend.
   tf_state_bucket = "${local.name_prefix}-terraform-state-${local.account_id}"
   tf_lock_table   = "${local.name_prefix}-terraform-locks"
+
+  # GitHub's OIDC token puts an immutable numeric ID after the owner and repo
+  # names in the "sub" claim (e.g. "repo:owner@123/repo@456:ref:...") instead
+  # of the plain "repo:owner/repo:ref:..." every tutorial still shows -
+  # confirmed by pulling the actual denied AssumeRoleWithWebIdentity event out
+  # of CloudTrail after a real deploy attempt failed.
+  github_owner     = split("/", var.github_repo)[0]
+  github_repo_name = split("/", var.github_repo)[1]
 }
 
 # Fetched live rather than hardcoded from memory - AWS validates the actual
@@ -55,6 +63,9 @@ resource "aws_iam_role" "github_actions_deploy" {
         # A single scalar pattern matching GitHub's current immutable-ID sub
         # claim format (confirmed via CloudTrail): "repo:owner@ID/repo@ID:ref:...",
         # not the classic "repo:owner/repo:ref:..." every tutorial still shows.
+        # (A two-pattern list was tried here once; a CI-run terraform apply
+        # silently collapsed it to its first, non-matching element, locking
+        # CI out of its own role - a scalar can't be "collapsed" that way.)
         StringLike = {
           "token.actions.githubusercontent.com:sub" = "repo:${local.github_owner}@*/${local.github_repo_name}@*:ref:refs/heads/${var.github_branch}"
         }
@@ -156,7 +167,7 @@ resource "aws_iam_role_policy" "github_actions_deploy" {
         Sid      = "AppLogGroupsDescribe"
         Effect   = "Allow"
         Action   = ["logs:DescribeLogGroups", "logs:ListTagsForResource"]
-        Resource = "*"
+        Resource = "*" # AWS requires this exact generic ARN form for these read/describe actions; per-log-group scoping isn't supported
       },
       {
         Sid      = "AppCloudWatchAlarmsAndDashboard"
@@ -186,7 +197,7 @@ resource "aws_iam_role_policy" "github_actions_deploy" {
           "cloudtrail:DescribeTrails", "cloudtrail:GetTrailStatus", "cloudtrail:GetEventSelectors",
           "cloudtrail:GetInsightSelectors", "cloudtrail:ListTags",
         ]
-        Resource = "*"
+        Resource = "*" # CloudTrail's read/describe actions don't support resource-level restriction either
       },
       {
         Sid      = "AppBudget"
